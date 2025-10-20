@@ -43,6 +43,8 @@ class EventTracker {
   }
 
   private initSession() {
+    if (typeof window === "undefined") return
+
     this.currentSession = {
       id: this.sessionId,
       userId: this.userId,
@@ -83,6 +85,8 @@ class EventTracker {
   }
 
   track(type: EventType, elementId: string, elementName: string, metadata?: Record<string, any>) {
+    if (typeof window === "undefined") return
+
     const event: LogEvent = {
       id: this.generateEventId(),
       type,
@@ -120,7 +124,8 @@ class EventTracker {
   }
 
   trackPageView(pageName: string, metadata?: Record<string, any>) {
-    this.track("page_view", window.location.pathname, pageName, metadata)
+    const path = typeof window !== "undefined" ? window.location.pathname : pageName
+    this.track("page_view", path, pageName, metadata)
   }
 
   trackFormSubmit(formId: string, formName: string, metadata?: Record<string, any>) {
@@ -151,8 +156,10 @@ class EventTracker {
     this.events = []
     this.sessions = []
     this.currentSession = null
-    localStorage.removeItem("logflow_events")
-    localStorage.removeItem("logflow_sessions")
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("logflow_events")
+      localStorage.removeItem("logflow_sessions")
+    }
   }
 }
 
