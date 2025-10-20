@@ -24,14 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`font-sans antialiased`}>
-        <div className="flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
-        <Toaster />
-        <Analytics />
+      <head>
         <Script
           src="http://localhost:9000/ba.js"
           data-site="logflow"
@@ -41,8 +34,18 @@ export default function RootLayout({
           data-spa="true"
           data-hb="15"
           data-sample="1.0"
+          strategy="beforeInteractive"
           defer
         />
+      </head>
+      <body className={`font-sans antialiased`}>
+        <div className="flex min-h-screen flex-col">
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
+        <Toaster />
+        <Analytics />
       </body>
     </html>
   )
