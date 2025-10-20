@@ -5,7 +5,17 @@ services:
       dockerfile: Dockerfile
     container_name: frontend-nginx
     ports:
-      - "3000:80"
+      - "8080:3000"
+    environment:
+      NODE_ENV: production
+    restart: unless-stopped
+  logflow-analytics:
+    build:
+      context: ./logflow-analytics
+      dockerfile: Dockerfile
+    container_name: logflow-analytics-app
+    ports:
+      - "8081:3001"
     environment:
       NODE_ENV: production
     restart: unless-stopped
