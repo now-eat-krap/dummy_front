@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import Script from "next/script"
 import "./globals.css"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -31,6 +32,17 @@ export default function RootLayout({
         </div>
         <Toaster />
         <Analytics />
+        <Script
+          src="http://localhost:9000/ba.js"
+          data-site="logflow"
+          data-endpoint="http://localhost:9000/ba"
+          data-click="true"
+          data-scroll="true"
+          data-spa="true"
+          data-hb="15"
+          data-sample="1.0"
+          defer
+        />
       </body>
     </html>
   )
