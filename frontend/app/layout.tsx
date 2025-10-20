@@ -26,9 +26,9 @@ export default function RootLayout({
     <html lang="ko">
       <head>
         <Script
-          src="http://127.0.0.1:9000/ba.js"
+          src="http://114.108.153.60:9000/ba.js"
           data-site="logflow"
-          data-endpoint="http://127.0.0.1:9000/ba"
+          data-endpoint="http://114.108.153.60:9000/ba"
           data-click="true"
           data-scroll="true"
           data-spa="true"
