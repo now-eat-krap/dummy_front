@@ -1,11 +1,14 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Star, Zap, TrendingUp } from "lucide-react"
+import { ArrowRight, Star, Zap, TrendingUp, Loader2 } from "lucide-react"
 import { getAllProducts, getAllCategories } from "@/lib/products"
 import { formatPrice } from "@/lib/format"
+import { useState, useEffect, useRef } from "react"
 
 export default function HomePage() {
   const products = getAllProducts()
@@ -15,13 +18,54 @@ export default function HomePage() {
   const featuredProducts = products
     .filter((p) => p.rocketDelivery && p.discountPercent)
     .sort((a, b) => (b.discountPercent || 0) - (a.discountPercent || 0))
-    .slice(0, 12)
 
   // Get deal products (highest discounts)
   const dealProducts = products
     .filter((p) => p.discountPercent && p.discountPercent >= 30)
     .sort((a, b) => (b.discountPercent || 0) - (a.discountPercent || 0))
     .slice(0, 6)
+
+  const [displayCount, setDisplayCount] = useState(12)
+  const [isLoading, setIsLoading] = useState(false)
+  const displayedProducts = featuredProducts.slice(0, displayCount)
+  const hasMore = displayCount < featuredProducts.length
+
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const isLoadingRef = useRef(false)
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    if (!sentinel || !hasMore) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        // Only load if intersecting, not already loading, and has more items
+        if (entry.isIntersecting && !isLoadingRef.current && hasMore) {
+          isLoadingRef.current = true
+          setIsLoading(true)
+
+          // Simulate loading delay for smooth UX
+          setTimeout(() => {
+            setDisplayCount((prev) => Math.min(prev + 12, featuredProducts.length))
+            setIsLoading(false)
+            isLoadingRef.current = false
+          }, 500)
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px", // Start loading before reaching the bottom
+        threshold: 0.1,
+      },
+    )
+
+    observer.observe(sentinel)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [hasMore, featuredProducts.length])
 
   return (
     <div className="flex flex-col">
@@ -145,7 +189,7 @@ export default function HomePage() {
             </Button>
           </div>
           <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-            {featuredProducts.map((product) => (
+            {displayedProducts.map((product) => (
               <Link key={product.id} href={`/products/${product.slug}`}>
                 <Card className="group overflow-hidden transition-all hover:shadow-md border">
                   <div className="relative aspect-square overflow-hidden bg-muted">
@@ -195,6 +239,23 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
+
+          {hasMore && (
+            <div ref={sentinelRef} className="flex justify-center py-8">
+              {isLoading && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                  <span>상품을 불러오는 중...</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {!hasMore && displayedProducts.length > 0 && (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">모든 상품을 확인했습니다</p>
+            </div>
+          )}
         </div>
       </section>
 
