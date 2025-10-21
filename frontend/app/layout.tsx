@@ -35,6 +35,7 @@ export default function RootLayout({
           data-hb="15"
           data-sample="1.0"
           strategy="beforeInteractive"
+          data-snapshot-upload="true"
           defer
         />
       </head>
